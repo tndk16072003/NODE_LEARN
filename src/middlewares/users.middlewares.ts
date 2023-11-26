@@ -50,7 +50,7 @@ export const registerValidator = validate(
       custom: {
         options: (value, { req }) => {
           if (value !== req.body.password) {
-            throw new Error('Mật khẩu xác nhận không giống') 
+            throw new Error('Mật khẩu xác nhận không giống')
           }
           return true
         }
