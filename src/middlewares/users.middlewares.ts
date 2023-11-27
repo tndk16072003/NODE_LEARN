@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import { checkSchema } from 'express-validator'
+import usersService from '~/services/users.services'
 import { validate } from '~/utils/validation'
 
 export const loginValidator = (req: Request, res: Response, next: NextFunction) => {
@@ -28,6 +29,12 @@ export const registerValidator = validate(
       isString: true
     },
     email: {
+      custom: {
+        options: async (value) => {
+          if (await usersService.checkEmailExist(value)) throw new Error('Email đã tồn tại')
+          return true
+        }
+      },
       errorMessage: 'Vui lòng nhập email đúng định dạng',
       notEmpty: true,
       isEmail: true,
