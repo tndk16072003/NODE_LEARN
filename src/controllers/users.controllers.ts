@@ -1,12 +1,10 @@
 import { Request, Response } from 'express'
-import { User } from '~/models/schemas/user.schema'
-import databaseService from '~/services/database.services'
 import usersService from '~/services/users.services'
 import { ParamsDictionary } from 'express-serve-static-core'
 import { registerReqBody } from '~/models/requests/user.requests'
 
 export const loginController = (req: Request, res: Response) => {
-  const { email, password } = req.body
+  const { password } = req.body
   if (password === '123123') {
     res.status(500).json({
       message: 'Mật khẩu quá đơn giản. Vui lòng nhập lại mật khẩu phức tạp hơn!'
