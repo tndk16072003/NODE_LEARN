@@ -1,4 +1,4 @@
-import { Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 import usersService from '~/services/users.services'
 import { ParamsDictionary } from 'express-serve-static-core'
 import { registerReqBody } from '~/models/requests/user.requests'
@@ -16,14 +16,15 @@ export const loginController = (req: Request, res: Response) => {
   })
 }
 
-export const registerController = async (req: Request<ParamsDictionary, any, registerReqBody>, res: Response) => {
-  try {
-    const result = await usersService.register(req.body)
-    return res.json({
-      message: 'Insert success!',
-      result
-    })
-  } catch (error) {
-    console.log(error)
-  }
+export const registerController = async (
+  req: Request<ParamsDictionary, any, registerReqBody>,
+  res: Response,
+  next: NextFunction
+) => {
+  throw new Error('Lỗi rồi nè!')
+  const result = usersService.register(req.body)
+  return res.json({
+    message: 'Insert success!',
+    result
+  })
 }

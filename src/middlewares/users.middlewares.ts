@@ -16,18 +16,6 @@ export const loginValidator = (req: Request, res: Response, next: NextFunction) 
 // sử dụng validate làm công cụ thông báo lỗi do checkSchema tìm thấy
 export const registerValidator = validate(
   checkSchema({
-    name: {
-      errorMessage: 'Tên người dùng phải từ 2 ký tự trở lên',
-      isLength: {
-        options: {
-          min: 2,
-          max: 100
-        }
-      },
-      notEmpty: true,
-      trim: true,
-      isString: true
-    },
     email: {
       custom: {
         options: async (value) => {
@@ -49,35 +37,6 @@ export const registerValidator = validate(
           minUppercase: 1,
           minSymbols: 1,
           minNumbers: 1
-        }
-      }
-    },
-    confirm_password: {
-      errorMessage: 'Mật khẩu xác nhận không trùng khớp',
-      custom: {
-        options: (value, { req }) => {
-          if (value !== req.body.password) {
-            throw new Error('Mật khẩu xác nhận không giống')
-          }
-          return true
-        }
-      },
-      notEmpty: true,
-      isStrongPassword: {
-        options: {
-          minLength: 6,
-          minUppercase: 1,
-          minSymbols: 1,
-          minNumbers: 1
-        }
-      }
-    },
-    date_of_birth: {
-      errorMessage: 'Ngày sinh chưa đúng định dạng',
-      isISO8601: {
-        options: {
-          strict: true,
-          strictSeparator: true
         }
       }
     }
