@@ -19,7 +19,7 @@ class UsersService {
     return { accessToken, refreshToken }
   }
 
-  async checkEmailExist(email: string) {
+  async emailIsAlreadyExist(email: string) {
     const user = await databaseService.users.findOne({ email })
     return Boolean(user)
   }

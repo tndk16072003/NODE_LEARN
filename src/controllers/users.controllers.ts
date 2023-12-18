@@ -21,7 +21,6 @@ export const registerController = async (
   res: Response,
   next: NextFunction
 ) => {
-  throw new Error('Lỗi rồi nè!')
   const result = usersService.register(req.body)
   return res.json({
     message: 'Insert success!',
