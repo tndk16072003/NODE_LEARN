@@ -5,3 +5,7 @@ export interface registerReqBody {
   confirm_password: string
   date_of_birth: string
 }
+export interface loginReqBody {
+  email: string
+  password: string
+}

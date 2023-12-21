@@ -2,17 +2,17 @@ import { NextFunction, Request, Response } from 'express'
 import usersService from '~/services/users.services'
 import { ParamsDictionary } from 'express-serve-static-core'
 import { registerReqBody } from '~/models/requests/user.requests'
+import { ObjectId } from 'mongodb'
+import { User } from '~/models/schemas/user.schema'
 
-export const loginController = (req: Request, res: Response) => {
-  const { password } = req.body
-  if (password === '123123') {
-    res.status(500).json({
-      message: 'Mật khẩu quá đơn giản. Vui lòng nhập lại mật khẩu phức tạp hơn!'
-    })
-  }
-  res.json({
-    message: 'Success',
-    data: req.body
+export const loginController = async (req: Request, res: Response) => {
+  console.log(req.user)
+  const user = req.user as User
+  const { _id } = user
+  const result = await usersService.login(_id.toString())
+  return res.json({
+    message: 'Login success!',
+    result: result
   })
 }
 
@@ -21,9 +21,9 @@ export const registerController = async (
   res: Response,
   next: NextFunction
 ) => {
-  const result = usersService.register(req.body)
+  const result = await usersService.register(req.body)
   return res.json({
-    message: 'Insert success!',
-    result
+    message: 'Register success!',
+    result: result
   })
 }

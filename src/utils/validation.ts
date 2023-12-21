@@ -11,8 +11,9 @@ export const validate = (validation: RunnableValidationChains<ValidationChain>) 
   return async (req: Request, res: Response, next: NextFunction) => {
     await validation.run(req) // xác định lỗi và lưu vào req
     const errors = validationResult(req)
-    if (isEmpty(errors)) return next() // nếu không có lỗi
+    console.log(errors)
     const errObject = errors.mapped()
+    if (isEmpty(errObject)) return next() // nếu không có lỗi
     const entityErr = new EntityError({ errors: {} })
     for (const key in errObject) {
       const { msg } = errObject[key]

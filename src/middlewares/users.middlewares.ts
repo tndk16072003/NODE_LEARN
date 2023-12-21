@@ -1,52 +1,85 @@
 import { Request, Response, NextFunction } from 'express'
 import { checkSchema } from 'express-validator'
+import { USERS_MESSAGES } from '~/constants/messages'
 import { ErrorWithStatus } from '~/models/Errors'
+import databaseService from '~/services/database.services'
 import usersService from '~/services/users.services'
 import { validate } from '~/utils/validation'
 
-export const loginValidator = (req: Request, res: Response, next: NextFunction) => {
-  const { email, password } = req.body
-  if (!email || !password) {
-    return res.status(400).json({
-      error: 'Thiếu dữ liệu'
-    })
-  }
-  next()
-}
-
-// sử dụng validate làm công cụ thông báo lỗi do checkSchema tìm thấy
-export const registerValidator = validate(
+export const loginValidator = validate(
   checkSchema({
-    name: {
-      notEmpty: true,
-      isLength: {
-        options: {
-          min: 2,
-          max: 30
-        },
-        errorMessage: 'Name length from 2 to 30 characters'
-      }
-    },
     email: {
-      isEmail: true,
-      notEmpty: true,
+      isEmail: {
+        errorMessage: USERS_MESSAGES.EMAIL_IS_INVALID
+      },
       trim: true,
       custom: {
-        options: async (value) => {
-          const error = await usersService.emailIsAlreadyExist(value)
-          if (error) throw new Error('Email already exist')
+        options: async (value, { req }) => {
+          const user = await databaseService.users.findOne({ email: value })
+          if (user === null) throw new Error(USERS_MESSAGES.EMAIL_OR_PASSWORD_IS_WRONG)
+          req.user = user
           return true
         }
       }
     },
     password: {
-      notEmpty: true,
+      notEmpty: {
+        errorMessage: USERS_MESSAGES.PASSWORD_IS_REQUIRED
+      },
+      isString: {
+        errorMessage: USERS_MESSAGES.PASSWORD_MUST_BE_A_STRING
+      }
+    }
+  })
+)
+
+// sử dụng validate làm công cụ thông báo lỗi do checkSchema tìm thấy
+export const registerValidator = validate(
+  checkSchema({
+    name: {
+      notEmpty: {
+        errorMessage: USERS_MESSAGES.NAME_IS_REQUIRED
+      },
+      isString: {
+        errorMessage: USERS_MESSAGES.NAME_MUST_BE_A_STRING
+      },
+      isLength: {
+        options: {
+          min: 2,
+          max: 30
+        },
+        errorMessage: USERS_MESSAGES.NAME_LENGTH_MUST_BE_FROM_2_TO_30
+      }
+    },
+    email: {
+      isEmail: {
+        errorMessage: USERS_MESSAGES.EMAIL_IS_INVALID
+      },
+      notEmpty: {
+        errorMessage: USERS_MESSAGES.EMAIL_IS_REQUIRED
+      },
+      trim: true,
+      custom: {
+        options: async (value) => {
+          const error = await usersService.emailIsAlreadyExist(value)
+          if (error) throw new Error(USERS_MESSAGES.EMAIL_ALREADY_EXISTS)
+          return true
+        }
+      }
+    },
+    password: {
+      notEmpty: {
+        errorMessage: USERS_MESSAGES.PASSWORD_IS_REQUIRED
+      },
+      isString: {
+        errorMessage: USERS_MESSAGES.PASSWORD_MUST_BE_A_STRING
+      },
       isLength: {
         options: {
           min: 6,
           max: 15
         },
-        errorMessage: 'Password length from 6 to 15 characters'
+        errorMessage: USERS_MESSAGES.PASSWORD_LENGTH_MUST_BE_FROM_6_TO_50
       },
       isStrongPassword: {
         options: {
@@ -55,7 +88,7 @@ export const registerValidator = validate(
           minNumbers: 1,
           minLowercase: 1
         },
-        errorMessage: 'Password must have at least 1 uppercase, 1 lowercase, 1 symbol and 1 number'
+        errorMessage: USERS_MESSAGES.PASSWORD_MUST_BE_STRONG
       }
     },
     confirm_password: {
@@ -63,7 +96,7 @@ export const registerValidator = validate(
       custom: {
         options: (value, { req }) => {
           if (value !== req.body.password) {
-            throw new Error('Passwords do not same')
+            throw new Error(USERS_MESSAGES.CONFIRM_PASSWORD_IS_THE_SAME_AS_THE_PASSWORD)
           }
           return true
         }
@@ -74,7 +107,8 @@ export const registerValidator = validate(
         options: {
           strict: true,
           strictSeparator: true
-        }
+        },
+        errorMessage: USERS_MESSAGES.DATE_OF_BIRTH_IS_INVALID
       }
     }
   })
