@@ -7,6 +7,7 @@ import { TokenType } from '~/constants/enums.constants'
 import RefreshToken from '~/models/schemas/refreshToken.schemas'
 import { ObjectId } from 'mongodb'
 import dotenv from 'dotenv'
+import { USERS_MESSAGES } from '~/constants/messages'
 dotenv.config()
 
 class UsersService {
@@ -65,6 +66,11 @@ class UsersService {
         expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN
       }
     })
+  }
+
+  async logout(refresh_token: string) {
+    await databaseService.refresh_tokens.deleteOne({ token: refresh_token })
+    return USERS_MESSAGES.LOGOUT_SUCCESS
   }
 }
 
