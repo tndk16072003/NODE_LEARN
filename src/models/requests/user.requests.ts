@@ -1,6 +1,10 @@
 import { JwtPayload } from 'jsonwebtoken'
 import { TokenType } from '~/constants/enums.constants'
 
+export interface getMeReqHeader {
+  access_token: string
+}
+
 export interface registerReqBody {
   name: string
   email: string
