@@ -1,10 +1,11 @@
 import { Router } from 'express'
 import {
-  emailVerifyController,
+  verifyEmailController,
   getMeController,
   loginController,
   logoutController,
   registerController,
+  resendEmailVerifyTokenController,
   updateController
 } from '~/controllers/users.controllers'
 import {
@@ -25,7 +26,16 @@ const usersRouter = Router()
  * Methods: POST
  * Body: { 'email_verify_token': string }
  */
-usersRouter.post('/verify-email', emailVerifyTokenValidator, wrapRequestHandlers(emailVerifyController))
+usersRouter.post('/verify-email', emailVerifyTokenValidator, wrapRequestHandlers(verifyEmailController))
+
+/**
+ * Description. Resend verify email when user client click resend email
+ * Path: /resend-verify-email
+ * Methods: POST
+ * Header: { Authorization: Bearer <access_token> }
+ * Body: {}
+ */
+usersRouter.post('/resend-verify-email', accessTokenValidator, wrapRequestHandlers(resendEmailVerifyTokenController))
 
 usersRouter.patch('/update', accessTokenValidator, wrapRequestHandlers(updateController))
 usersRouter.get('/me', getMeValidator, wrapRequestHandlers(getMeController))

@@ -1,8 +1,8 @@
 import { JwtPayload } from 'jsonwebtoken'
 import { TokenType } from '~/constants/enums.constants'
 
-export interface getMeReqHeader {
-  access_token: string
+export interface verifyEmailTokenReqBody {
+  email_verify_token: string
 }
 
 export interface registerReqBody {
