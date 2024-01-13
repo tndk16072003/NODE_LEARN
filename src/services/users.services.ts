@@ -1,6 +1,6 @@
 import { User } from '~/models/schemas/user.schema'
 import databaseService from './database.services'
-import { registerReqBody } from '~/models/requests/user.requests'
+import { registerReqBody, resetPasswordTokenReqBody } from '~/models/requests/user.requests'
 import { hashPassword } from '~/utils/cryptos'
 import { signToken } from '~/utils/jwt'
 import { TokenType, UserVerifyStatus } from '~/constants/enums.constants'
@@ -54,11 +54,24 @@ class UsersService {
     return signToken({
       payload: {
         userId,
-        token_type: TokenType.AccessToken
+        token_type: TokenType.EmailVerifyToken
       },
       secretOrPrivateKey: process.env.JWT_SECRET_EMAIL_VERIFY_TOKEN as string,
       options: {
         expiresIn: process.env.EMAIL_VERIFY_TOKEN_EXPIRES_IN
+      }
+    })
+  }
+
+  private signForgotPasswordToken(userId: string) {
+    return signToken({
+      payload: {
+        userId,
+        token_type: TokenType.ForgotPasswordToken
+      },
+      secretOrPrivateKey: process.env.JWT_SECRET_FORGOT_PASSWORD_TOKEN as string,
+      options: {
+        expiresIn: process.env.FORGOT_PASSWORD_TOKEN_EXPIRES_IN
       }
     })
   }
@@ -143,6 +156,29 @@ class UsersService {
     return {
       message: USERS_MESSAGES.RESEND_EMAIL_VERIFY_SUCCESS
     }
+  }
+
+  async forgotPassword(user_id: string) {
+    const forgot_password_token = await this.signForgotPasswordToken(user_id)
+
+    await databaseService.users.updateOne(
+      { _id: new ObjectId(user_id) },
+      { $set: { forgot_password_token }, $currentDate: { updated_at: true } }
+    )
+    // Gửi email forgot password kèm forgot_password_token đến email người dùng: https://twitter.com/forgot-password?token=token
+    console.log('Forgot password token: ', forgot_password_token)
+
+    return {
+      message: USERS_MESSAGES.CHECK_EMAIL_TO_RESET_PASSWORD_SUCCESS
+    }
+  }
+
+  async resetPassword(user_id: string, password: string) {
+    await databaseService.users.updateOne(
+      { _id: new ObjectId(user_id) },
+      { $set: { forgot_password_token: '', password: hashPassword(password) }, $currentDate: { updated_at: true } }
+    )
+    return { message: USERS_MESSAGES.RESET_PASSWORD_IS_SUCCESS }
   }
 }
 

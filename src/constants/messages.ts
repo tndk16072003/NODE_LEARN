@@ -9,9 +9,8 @@ export const USERS_MESSAGES = {
   EMAIL_OR_PASSWORD_IS_WRONG: 'Email or password is wrong',
   PASSWORD_IS_REQUIRED: 'Password is required',
   PASSWORD_MUST_BE_A_STRING: 'Password must be a string',
-  PASSWORD_LENGTH_MUST_BE_FROM_6_TO_50: 'Password length must be from 6 to 50',
   PASSWORD_MUST_BE_STRONG:
-    'Password must be 6-50 characters long and contain at least 1 lowercase letter, 1 uppercase letter, 1 number, and 1 symbol',
+    'Password must be 6 characters long and contain at least 1 lowercase letter, 1 uppercase letter, 1 number, and 1 symbol',
   CONFIRM_PASSWORD_IS_REQUIRED: 'Confirm password is required',
   CONFIRM_PASSWORD_MUST_BE_STRONG:
     'Confirm password must be 6-50 characters long and contain at least 1 lowercase letter, 1 uppercase letter, 1 number, and 1 symbol',
@@ -31,5 +30,9 @@ export const USERS_MESSAGES = {
   USER_NOT_FOUND: 'User not found',
   EMAIL_ALREADY_VERIFY_BEFORE: 'Email already verify before',
   EMAIL_VERIFY_SUCCESS: 'Email verify success',
-  RESEND_EMAIL_VERIFY_SUCCESS: 'Resend email verify success'
+  RESEND_EMAIL_VERIFY_SUCCESS: 'Resend email verify success',
+  CHECK_EMAIL_TO_RESET_PASSWORD_SUCCESS: 'Check email to reset password success',
+  FORGOT_PASSWORD_TOKEN_IS_REQUIRED: 'Forgot password token is required',
+  FORGOT_PASSWORD_TOKEN_IS_INVALID: 'Forgot password token is invalid',
+  RESET_PASSWORD_IS_SUCCESS: 'Reset password is success'
 } as const

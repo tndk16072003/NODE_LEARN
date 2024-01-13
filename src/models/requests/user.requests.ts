@@ -5,6 +5,20 @@ export interface verifyEmailTokenReqBody {
   email_verify_token: string
 }
 
+export interface verifyForgotPasswordTokenReqBody {
+  forgot_password_token: string
+}
+
+export interface resetPasswordTokenReqBody {
+  forgot_password_token: string
+  password: string
+  confirm_password: string
+}
+
+export interface forgotPasswordReqBody {
+  email: string
+}
+
 export interface registerReqBody {
   name: string
   email: string
