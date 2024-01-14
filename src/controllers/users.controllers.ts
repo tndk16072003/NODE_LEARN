@@ -18,11 +18,13 @@ import { ObjectId } from 'mongodb'
 import { HTTP_STATUS } from '~/constants/ErrorStatus'
 import { UserVerifyStatus } from '~/constants/enums.constants'
 import { hashPassword } from '~/utils/cryptos'
+import { pick } from 'lodash'
 
 export const updateController = async (req: Request, res: Response, next: NextFunction) => {
-  return res.json({
-    message: 'Hello'
-  })
+  const { userId } = req.decoded_authorization as TokenPayload
+  const { body } = req
+  const result = await usersService.updateProfile(userId, body)
+  return res.json({ message: USERS_MESSAGES.UPDATE_PROFILE_SUCCESS, result: result })
 }
 export const resetPasswordController = async (
   req: Request<ParamsDictionary, any, resetPasswordTokenReqBody>,
@@ -51,8 +53,8 @@ export const forgotPasswordController = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { _id } = req.user as User
-  const result = await usersService.forgotPassword(_id.toString())
+  const { _id, verify } = req.user as User
+  const result = await usersService.forgotPassword({ userId: _id.toString(), verify })
 
   return res.json(result)
 }
@@ -111,10 +113,10 @@ export const loginController = async (
   next: NextFunction
 ) => {
   const user = req.user as User
-  const { _id } = user
+  const { _id, verify } = user
   const { password } = req.body
   if (hashPassword(password) !== user.password) throw new Error(USERS_MESSAGES.EMAIL_OR_PASSWORD_IS_WRONG)
-  const result = await usersService.login(_id.toString())
+  const result = await usersService.login({ userId: _id.toString(), verify })
   return res.json({
     message: USERS_MESSAGES.LOGIN_SUCCESS,
     result: result

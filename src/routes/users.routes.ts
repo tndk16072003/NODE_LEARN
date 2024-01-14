@@ -11,6 +11,7 @@ import {
   verifyForgotPasswordController,
   resetPasswordController
 } from '~/controllers/users.controllers'
+import { filterMiddleware } from '~/middlewares/common.middlewares'
 import {
   accessTokenValidator,
   emailVerifyTokenValidator,
@@ -20,8 +21,11 @@ import {
   refreshTokenValidator,
   registerValidator,
   resetPasswordValidator,
+  updateValidator,
+  verifiedUserValidator,
   verifyForgotPasswordTokenValidator
 } from '~/middlewares/users.middlewares'
+import { updateReqBody } from '~/models/requests/user.requests'
 import { wrapRequestHandlers } from '~/utils/handlers'
 
 const usersRouter = Router()
@@ -81,7 +85,30 @@ usersRouter.post('/resend-verify-email', accessTokenValidator, wrapRequestHandle
  */
 usersRouter.post('/reset-password', resetPasswordValidator, wrapRequestHandlers(resetPasswordController))
 
-usersRouter.patch('/update', accessTokenValidator, wrapRequestHandlers(updateController))
+/**
+ * Description. Update my profile
+ * Path: /me
+ * Methods: PATH
+ * Header: {}
+ * Body: UserSchema
+ */
+usersRouter.patch(
+  '/me',
+  accessTokenValidator,
+  verifiedUserValidator,
+  updateValidator,
+  filterMiddleware<updateReqBody>([
+    'name',
+    'date_of_birth',
+    'bio',
+    'location',
+    'username',
+    'website',
+    'avatar',
+    'cover_photo'
+  ]),
+  wrapRequestHandlers(updateController)
+)
 usersRouter.get('/me', getMeValidator, wrapRequestHandlers(getMeController))
 usersRouter.post('/login', loginValidator, wrapRequestHandlers(loginController))
 usersRouter.post('/register', registerValidator, wrapRequestHandlers(registerController))

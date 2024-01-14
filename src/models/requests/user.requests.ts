@@ -39,3 +39,14 @@ export interface TokenPayload extends JwtPayload {
   user_id: string
   token_type: TokenType
 }
+
+export interface updateReqBody {
+  name?: string
+  date_of_birth?: string
+  bio?: string
+  location?: string
+  username?: string
+  website?: string
+  avatar?: string
+  cover_photo?: string
+}
