@@ -1,13 +1,14 @@
 import { User } from '~/models/schemas/user.schema'
 import databaseService from './database.services'
-import { registerReqBody, resetPasswordTokenReqBody, updateReqBody } from '~/models/requests/user.requests'
+import { registerReqBody, updateReqBody } from '~/models/requests/user.requests'
 import { hashPassword } from '~/utils/cryptos'
 import { signToken } from '~/utils/jwt'
 import { TokenType, UserVerifyStatus } from '~/constants/enums.constants'
-import RefreshToken from '~/models/schemas/refreshToken.schemas'
+import RefreshToken from '~/models/schemas/refreshToken.schema'
 import { ObjectId } from 'mongodb'
 import dotenv from 'dotenv'
 import { USERS_MESSAGES } from '~/constants/messages'
+import Follower from '~/models/schemas/follower.schema'
 dotenv.config()
 
 // verify: Xác định rằng USER đã được verify hay chưa
@@ -148,6 +149,9 @@ class UsersService {
       )
     ])
     const [accessToken, refreshToken] = result
+    await databaseService.refresh_tokens.insertOne(
+      new RefreshToken({ token: refreshToken, user_id: new ObjectId(userId.toString()) })
+    )
     return {
       accessToken,
       refreshToken
@@ -200,6 +204,32 @@ class UsersService {
     )
 
     return user
+  }
+
+  async follow(user_id: string, followed_user_id: string) {
+    await databaseService.followers.insertOne(
+      new Follower({
+        user_id: new ObjectId(user_id),
+        followed_user_id: new ObjectId(followed_user_id)
+      })
+    )
+    return { message: USERS_MESSAGES.FOLLOW_SUCCESS }
+  }
+
+  async unfollow(user_id: string, followed_user_id: string) {
+    await databaseService.followers.findOneAndDelete({
+      user_id: new ObjectId(user_id),
+      followed_user_id: new ObjectId(followed_user_id)
+    })
+    return { message: USERS_MESSAGES.UNFOLLOW_SUCCESS }
+  }
+
+  async changePassword(user_id: string, password: string) {
+    await databaseService.users.findOneAndUpdate(
+      { _id: new ObjectId(user_id) },
+      { $set: { password: hashPassword(password) }, $currentDate: { updated_at: true } }
+    )
+    return { message: USERS_MESSAGES.CHANGE_PASSWORD_SUCCESS }
   }
 }
 

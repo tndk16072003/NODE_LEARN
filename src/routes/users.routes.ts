@@ -1,4 +1,4 @@
-import { Router } from 'express'
+import { Request, Router } from 'express'
 import {
   verifyEmailController,
   getMeController,
@@ -9,18 +9,24 @@ import {
   updateController,
   forgotPasswordController,
   verifyForgotPasswordController,
-  resetPasswordController
+  resetPasswordController,
+  followController,
+  unfollowController,
+  changePasswordController
 } from '~/controllers/users.controllers'
 import { filterMiddleware } from '~/middlewares/common.middlewares'
 import {
   accessTokenValidator,
+  changePasswordValidator,
   emailVerifyTokenValidator,
+  followValidator,
   forgotPasswordValidator,
   getMeValidator,
   loginValidator,
   refreshTokenValidator,
   registerValidator,
   resetPasswordValidator,
+  unfollowValidator,
   updateValidator,
   verifiedUserValidator,
   verifyForgotPasswordTokenValidator
@@ -31,7 +37,7 @@ import { wrapRequestHandlers } from '~/utils/handlers'
 const usersRouter = Router()
 
 /**
- * Description. Verify email when user client click on the link verify email
+ * Description: Verify email when user client click on the link verify email
  * Path: /verify-email
  * Methods: POST
  * Body: { 'email_verify_token': string }
@@ -39,7 +45,7 @@ const usersRouter = Router()
 usersRouter.post('/verify-email', emailVerifyTokenValidator, wrapRequestHandlers(verifyEmailController))
 
 /**
- * Description. Resend verify email when user client click resend email
+ * Description: Resend verify email when user client click resend email
  * Path: /resend-verify-email
  * Methods: POST
  * Header: { Authorization: Bearer <access_token> }
@@ -48,7 +54,7 @@ usersRouter.post('/verify-email', emailVerifyTokenValidator, wrapRequestHandlers
 usersRouter.post('/resend-verify-email', accessTokenValidator, wrapRequestHandlers(resendEmailVerifyTokenController))
 
 /**
- * Description. Form input email to forgot password & Resend email forgot password
+ * Description: Form input email to forgot password & Resend email forgot password
  * Path: /forgot-password
  * Methods: POST
  * Body: { email: string }
@@ -56,7 +62,7 @@ usersRouter.post('/resend-verify-email', accessTokenValidator, wrapRequestHandle
 usersRouter.post('/forgot-password', forgotPasswordValidator, wrapRequestHandlers(forgotPasswordController))
 
 /**
- * Description. Verify forgot_password_token
+ * Description: Verify forgot_password_token
  * Path: /verify-forgot-password
  * Methods: POST
  * Body: { forgot_password_token: string }
@@ -68,7 +74,30 @@ usersRouter.post(
 )
 
 /**
- * Description. Resend verify email when user client click resend email
+ * Description: Follow someone
+ * Path: /follow
+ * Methods: POST
+ * Header: { authorization: Bearer { access_token } }
+ * Body: { followed_user_id: string }
+ */
+usersRouter.post(
+  '/follow',
+  accessTokenValidator,
+  verifiedUserValidator,
+  followValidator,
+  wrapRequestHandlers(followController)
+)
+
+/**
+ * Description: unFollow someone
+ * Path: /follow/:user_id
+ * Methods: DELETE
+ * Header: { authorization: Bearer { access_token }, followed_user_id: string }
+ */
+usersRouter.delete('/follow/:user_id', accessTokenValidator, unfollowValidator, wrapRequestHandlers(unfollowController))
+
+/**
+ * Description: Resend verify email when user client click resend email
  * Path: /resend-verify-email
  * Methods: POST
  * Header: { Authorization: Bearer <access_token> }
@@ -77,7 +106,7 @@ usersRouter.post(
 usersRouter.post('/resend-verify-email', accessTokenValidator, wrapRequestHandlers(resendEmailVerifyTokenController))
 
 /**
- * Description. Reset password
+ * Description: Reset password
  * Path: /reset-password
  * Methods: POST
  * Header: {}
@@ -86,7 +115,22 @@ usersRouter.post('/resend-verify-email', accessTokenValidator, wrapRequestHandle
 usersRouter.post('/reset-password', resetPasswordValidator, wrapRequestHandlers(resetPasswordController))
 
 /**
- * Description. Update my profile
+ * Description: Change password
+ * Path: /reset-password
+ * Methods: POST
+ * Header: { authorization: Bearer { access_token } }
+ * Body: { old_password: string, password: string, confirm_password: string }
+ */
+usersRouter.put(
+  '/change-password',
+  accessTokenValidator,
+  verifiedUserValidator,
+  changePasswordValidator,
+  wrapRequestHandlers(changePasswordController)
+)
+
+/**
+ * Description: Update my profile
  * Path: /me
  * Methods: PATH
  * Header: {}

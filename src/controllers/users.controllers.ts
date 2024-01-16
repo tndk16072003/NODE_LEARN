@@ -3,13 +3,16 @@ import usersService from '~/services/users.services'
 import { ParamsDictionary } from 'express-serve-static-core'
 import {
   TokenPayload,
+  followReqBody,
   forgotPasswordReqBody,
   loginReqBody,
   logoutReqBody,
   registerReqBody,
   resetPasswordTokenReqBody,
+  UnfollowReqParams,
   verifyEmailTokenReqBody,
-  verifyForgotPasswordTokenReqBody
+  verifyForgotPasswordTokenReqBody,
+  changePasswordReqBody
 } from '~/models/requests/user.requests'
 import { User } from '~/models/schemas/user.schema'
 import { USERS_MESSAGES } from '~/constants/messages'
@@ -18,7 +21,35 @@ import { ObjectId } from 'mongodb'
 import { HTTP_STATUS } from '~/constants/ErrorStatus'
 import { UserVerifyStatus } from '~/constants/enums.constants'
 import { hashPassword } from '~/utils/cryptos'
-import { pick } from 'lodash'
+
+export const changePasswordController = async (
+  req: Request<ParamsDictionary, any, changePasswordReqBody>,
+  res: Response,
+  next: NextFunction
+) => {
+  const { userId } = req.decoded_authorization as TokenPayload
+  const { password } = req.body
+  const result = await usersService.changePassword(userId, password)
+  return res.json(result)
+}
+
+export const unfollowController = async (req: Request<UnfollowReqParams>, res: Response, next: NextFunction) => {
+  const { userId } = req.decoded_authorization as TokenPayload
+  const { user_id: followed_user_id } = req.params
+  const result = await usersService.unfollow(userId, followed_user_id)
+  return res.json(result)
+}
+
+export const followController = async (
+  req: Request<ParamsDictionary, any, followReqBody>,
+  res: Response,
+  next: NextFunction
+) => {
+  const { userId } = req.decoded_authorization as TokenPayload
+  const { followed_user_id } = req.body
+  const result = await usersService.follow(userId, followed_user_id)
+  return res.json(result)
+}
 
 export const updateController = async (req: Request, res: Response, next: NextFunction) => {
   const { userId } = req.decoded_authorization as TokenPayload

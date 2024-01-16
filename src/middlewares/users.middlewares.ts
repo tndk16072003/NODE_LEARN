@@ -1,4 +1,4 @@
-import { check, checkSchema, ParamSchema } from 'express-validator'
+import { checkSchema, ParamSchema } from 'express-validator'
 import { JsonWebTokenError } from 'jsonwebtoken'
 import { HTTP_STATUS } from '~/constants/ErrorStatus'
 import { USERS_MESSAGES } from '~/constants/messages'
@@ -13,6 +13,7 @@ import { ObjectId } from 'mongodb'
 import { hashPassword } from '~/utils/cryptos'
 import { NextFunction, Request, Response } from 'express'
 import { UserVerifyStatus } from '~/constants/enums.constants'
+import { REGEX_USERNAME } from '~/constants/regex.constants'
 
 const passwordSchema: ParamSchema = {
   notEmpty: {
@@ -29,6 +30,25 @@ const passwordSchema: ParamSchema = {
       minUppercase: 1
     },
     errorMessage: USERS_MESSAGES.PASSWORD_MUST_BE_STRONG
+  }
+}
+
+const userIdSchema: ParamSchema = {
+  custom: {
+    options: async (value: string) => {
+      if (!ObjectId.isValid(value))
+        throw new ErrorWithStatus({
+          message: USERS_MESSAGES.USER_ID_IS_INVALID,
+          status: HTTP_STATUS.UNAUTHORIZED
+        })
+      const followed_user = await databaseService.users.findOne({ _id: new ObjectId(value) })
+      if (followed_user === null)
+        throw new ErrorWithStatus({
+          message: USERS_MESSAGES.FOLLOWED_USER_NOT_FOUND,
+          status: HTTP_STATUS.NOT_FOUND
+        })
+      return true
+    }
   }
 }
 
@@ -353,6 +373,30 @@ export const resetPasswordValidator = validate(
   )
 )
 
+export const changePasswordValidator = validate(
+  checkSchema({
+    old_password: {
+      ...passwordSchema,
+      custom: {
+        options: async (value: string, { req }) => {
+          const { userId } = (req as Request).decoded_authorization as TokenPayload
+          const user = await databaseService.users.findOne({ _id: new ObjectId(userId) })
+          if (user === null)
+            throw new ErrorWithStatus({ message: USERS_MESSAGES.USER_NOT_FOUND, status: HTTP_STATUS.NOT_FOUND })
+          if (hashPassword(value) !== user.password)
+            throw new ErrorWithStatus({
+              message: USERS_MESSAGES.OLD_PASSWORD_NOT_MATCH,
+              status: HTTP_STATUS.UNPROCESSABLE_ENTITY
+            })
+          return true
+        }
+      }
+    },
+    password: passwordSchema,
+    confirm_password: confirmPasswordSchema
+  })
+)
+
 export const verifiedUserValidator = (req: Request, res: Response, next: NextFunction) => {
   const { verify } = req.decoded_authorization as TokenPayload
   if (verify !== UserVerifyStatus.Verified)
@@ -414,13 +458,46 @@ export const updateValidator = validate(
       trim: true,
       isLength: {
         options: {
-          min: 1,
-          max: 200
+          min: 4,
+          max: 50
         },
         errorMessage: USERS_MESSAGES.USERNAME_LENGTH
+      },
+      custom: {
+        options: async (value: string) => {
+          if (!REGEX_USERNAME.test(value))
+            throw new ErrorWithStatus({
+              message: USERS_MESSAGES.USERNAME_IS_INVALID,
+              status: HTTP_STATUS.UNAUTHORIZED
+            })
+          const user = await databaseService.users.findOne({ username: value })
+          if (user)
+            throw new ErrorWithStatus({
+              message: USERS_MESSAGES.USERNAME_ALREADY_EXISTS,
+              status: HTTP_STATUS.UNAUTHORIZED
+            })
+        }
       }
     },
     avatar: imageSchema,
     cover_photo: imageSchema
   })
+)
+
+export const followValidator = validate(
+  checkSchema(
+    {
+      followed_user_id: userIdSchema
+    },
+    ['body']
+  )
+)
+
+export const unfollowValidator = validate(
+  checkSchema(
+    {
+      user_id: userIdSchema
+    },
+    ['params']
+  )
 )

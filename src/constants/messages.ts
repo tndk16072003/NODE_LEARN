@@ -28,6 +28,7 @@ export const USERS_MESSAGES = {
   EMAIL_VERIFY_TOKEN_IS_REQUIRED: 'Email verify token is required',
   USED_EMAIL_VERIFY_TOKEN_OR_NOT_EXIST: 'Email verify token is used or does not exist',
   USER_NOT_FOUND: 'User not found',
+  FOLLOWED_USER_NOT_FOUND: 'Followed user not found',
   EMAIL_ALREADY_VERIFY_BEFORE: 'Email already verify before',
   EMAIL_VERIFY_SUCCESS: 'Email verify success',
   RESEND_EMAIL_VERIFY_SUCCESS: 'Resend email verify success',
@@ -36,6 +37,7 @@ export const USERS_MESSAGES = {
   FORGOT_PASSWORD_TOKEN_IS_INVALID: 'Forgot password token is invalid',
   RESET_PASSWORD_IS_SUCCESS: 'Reset password is success',
   USER_NOT_VERIFIED: 'User not verified',
+  FOLLOWED_USER_NOT_VERIFIED: 'Followed User not verified',
   BIO_MUST_BE_STRING: 'Bio must be string',
   BIO_LENGTH: 'Bio length must be from 1 to 200 characters',
   LOCATION_MUST_BE_STRING: 'Location must be string',
@@ -43,8 +45,15 @@ export const USERS_MESSAGES = {
   WEBSITE_MUST_BE_STRING: 'Website must be string',
   WEBSITE_LENGTH: 'Website length must be from 1 to 200 characters',
   USERNAME_MUST_BE_STRING: 'Username must be string',
-  USERNAME_LENGTH: 'Username length must be from 1 to 50 characters',
+  USERNAME_LENGTH: 'Username length must be from 4 to 50 characters',
   IMAGE_MUST_BE_STRING: 'Image must be string',
   IMAGE_LENGTH: 'Image length must be from 1 to 400 characters',
-  UPDATE_PROFILE_SUCCESS: 'Update profile success'
+  UPDATE_PROFILE_SUCCESS: 'Update profile success',
+  USER_ID_IS_INVALID: 'Followed user id is invalid',
+  FOLLOW_SUCCESS: 'Follow success',
+  UNFOLLOW_SUCCESS: 'Unfollow success',
+  USERNAME_IS_INVALID: 'Username is invalid',
+  USERNAME_ALREADY_EXISTS: 'Username already exists',
+  OLD_PASSWORD_NOT_MATCH: 'Old password not match',
+  CHANGE_PASSWORD_SUCCESS: 'Change password success'
 } as const
