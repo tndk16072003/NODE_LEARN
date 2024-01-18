@@ -12,7 +12,8 @@ import {
   resetPasswordController,
   followController,
   unfollowController,
-  changePasswordController
+  changePasswordController,
+  oauthGoogleController
 } from '~/controllers/users.controllers'
 import { filterMiddleware } from '~/middlewares/common.middlewares'
 import {
@@ -153,8 +154,20 @@ usersRouter.patch(
   ]),
   wrapRequestHandlers(updateController)
 )
+
+/**
+ * Description: OAuth Google
+ * Path: /oauth/google
+ * Methods: GET
+ * Header: {}
+ * Body: {}
+ * Query: { code: string }
+ */
+usersRouter.get('/oauth/google', wrapRequestHandlers(oauthGoogleController))
+
 usersRouter.get('/me', getMeValidator, wrapRequestHandlers(getMeController))
 usersRouter.post('/login', loginValidator, wrapRequestHandlers(loginController))
+
 usersRouter.post('/register', registerValidator, wrapRequestHandlers(registerController))
 usersRouter.post('/logout', accessTokenValidator, refreshTokenValidator, wrapRequestHandlers(logoutController))
 

@@ -21,6 +21,8 @@ import { ObjectId } from 'mongodb'
 import { HTTP_STATUS } from '~/constants/ErrorStatus'
 import { UserVerifyStatus } from '~/constants/enums.constants'
 import { hashPassword } from '~/utils/cryptos'
+import { config } from 'dotenv'
+config()
 
 export const changePasswordController = async (
   req: Request<ParamsDictionary, any, changePasswordReqBody>,
@@ -136,6 +138,16 @@ export const getMeController = async (req: Request, res: Response, next: NextFun
     message: USERS_MESSAGES.GET_ME_SUCCESS,
     result: user
   })
+}
+
+export const oauthGoogleController = async (req: Request, res: Response, next: NextFunction) => {
+  const { code } = req.query
+  const result = await usersService.oauth(code as string)
+  console.log(result.refreshToken)
+  const urlCallBack = `${process.env.CLIENT_URL_CALL_BACK}?accessToken=${result.accessToken}&refreshToken=${result.refreshToken}&newUser=${result.newUser}`
+  console.log(urlCallBack)
+
+  return res.redirect(urlCallBack)
 }
 
 export const loginController = async (
