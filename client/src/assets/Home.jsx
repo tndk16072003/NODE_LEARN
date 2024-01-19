@@ -1,3 +1,4 @@
+import axios from 'axios'
 import reactLogo from './react.svg'
 import viteLogo from '/vite.svg'
 import { Link } from 'react-router-dom'
@@ -18,11 +19,39 @@ const getGoogleoAuthUrl = () => {
   return `${url}?${queryString}`
 }
 
-const googleOAuthUrl = getGoogleoAuthUrl()
+const getFacebookoAuthUrl = () => {
+  const { VITE_FACEBOOK_CLIENT_ID, VITE_FACEBOOK_REDIRECT_URI } = import.meta.env
+  const url = 'https://www.facebook.com/v18.0/dialog/oauth'
+  const query = {
+    client_id: VITE_FACEBOOK_CLIENT_ID,
+    redirect_uri: VITE_FACEBOOK_REDIRECT_URI,
+    response_type: 'code',
+    scope: ['email', 'public_profile']
+  }
+  const queryString = new URLSearchParams(query).toString()
+  return `${url}?${queryString}`
+}
 
+const facebookOAuthUrl = getFacebookoAuthUrl()
+const googleOAuthUrl = getGoogleoAuthUrl()
 export default function Home() {
   const isAuthenticated = Boolean(localStorage.getItem('accessToken'))
-  const logout = () => {
+  const logout = async () => {
+    try {
+      await axios.post(
+        'http://localhost:4000/api/users/logout',
+        {
+          refresh_token: localStorage.getItem('refreshToken')
+        },
+        {
+          headers: {
+            Authorization: 'Bearer ' + localStorage.getItem('accessToken')
+          }
+        }
+      )
+    } catch (error) {
+      console.error('Error during logout:', error.response.data)
+    }
     localStorage.removeItem('accessToken')
     localStorage.removeItem('refreshToken')
     window.location.reload()
@@ -45,7 +74,12 @@ export default function Home() {
             <button onClick={logout}>Logout</button>
           </>
         ) : (
-          <Link to={googleOAuthUrl}>Login with googles</Link>
+          <>
+            <Link to={googleOAuthUrl} style={{ marginRight: '10px' }}>
+              Login with googles
+            </Link>
+            <Link to={facebookOAuthUrl}>Login with facebook</Link>
+          </>
         )}
       </p>
     </>

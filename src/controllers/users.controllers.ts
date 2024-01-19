@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from 'express'
+import { NextFunction, Request, Response, request } from 'express'
 import usersService from '~/services/users.services'
 import { ParamsDictionary } from 'express-serve-static-core'
 import {
@@ -140,10 +140,18 @@ export const getMeController = async (req: Request, res: Response, next: NextFun
   })
 }
 
+export const oauthFacebookController = async (req: Request, res: Response, next: NextFunction) => {
+  const { code } = req.query
+
+  const result = await usersService.oauthFacebook(code as string)
+  const urlCallBack = `${process.env.CLIENT_URL_CALL_BACK}?accessToken=${result.accessToken}&refreshToken=${result.refreshToken}&newUser=${result.newUser}`
+  console.log(urlCallBack)
+  return res.redirect(urlCallBack)
+}
+
 export const oauthGoogleController = async (req: Request, res: Response, next: NextFunction) => {
   const { code } = req.query
   const result = await usersService.oauth(code as string)
-  console.log(result.refreshToken)
   const urlCallBack = `${process.env.CLIENT_URL_CALL_BACK}?accessToken=${result.accessToken}&refreshToken=${result.refreshToken}&newUser=${result.newUser}`
   console.log(urlCallBack)
 

@@ -18,6 +18,50 @@ dotenv.config()
 // verify: Xác định rằng USER đã được verify hay chưa
 
 class UsersService {
+  async oauthFacebook(code: string) {
+    const { access_token } = await this.getOauthFacebookToken(code)
+    const userInfo = await this.getOauthFacebookUserInfo(access_token)
+    const user = await databaseService.users.findOne({ email: userInfo.email })
+    if (user) {
+      if (user.verify !== UserVerifyStatus.Verified) {
+        console.log(user.email_verify_token)
+        throw new ErrorWithStatus({ message: USERS_MESSAGES.USER_NOT_VERIFIED, status: HTTP_STATUS.UNAUTHORIZED })
+      }
+      const userId = user._id.toString()
+      const data = await this.login({ userId, verify: UserVerifyStatus.Verified })
+      return { ...data, newUser: false }
+    } else {
+      const data = await this.register({
+        name: userInfo.name,
+        email: userInfo.email,
+        date_of_birth: new Date().toISOString(),
+        password: hashPassword(crypto.randomBytes(6).toString('hex'))
+      })
+      return { ...data, newUser: true }
+    }
+  }
+
+  async getOauthFacebookUserInfo(access_token: string) {
+    const body = {
+      fields: 'id,name,email',
+      access_token
+    }
+    const { data } = await axios.get('https://graph.facebook.com/v18.0/me', { params: body })
+    return data
+  }
+
+  async getOauthFacebookToken(code: string) {
+    const body = {
+      code,
+      client_id: process.env.FACEBOOK_CLIENT_ID as string,
+      client_secret: process.env.FACEBOOK_CLIENT_SECRET as string,
+      redirect_uri: process.env.FACEBOOK_REDIRECT_URI as string,
+      grant_type: 'authorization_code'
+    }
+    const { data } = await axios.get('https://graph.facebook.com/v18.0/oauth/access_token', { params: body })
+    return data
+  }
+
   async oauth(code: string) {
     const { id_token, access_token } = await this.getOauthGoogleToken(code)
     const userInfo = await this.getGoogleUserInfo(access_token, id_token)
@@ -25,6 +69,10 @@ class UsersService {
       throw new ErrorWithStatus({ message: USERS_MESSAGES.GMAIL_NOT_VERIFIED, status: HTTP_STATUS.BAD_REQUEST })
     const user = await databaseService.users.findOne({ email: userInfo.email })
     if (user) {
+      if (user.verify !== UserVerifyStatus.Verified) {
+        console.log(user.email_verify_token)
+        throw new ErrorWithStatus({ message: USERS_MESSAGES.USER_NOT_VERIFIED, status: HTTP_STATUS.UNAUTHORIZED })
+      }
       const userId = user._id.toString()
       const data = await this.login({ userId, verify: userInfo.verified_email })
       return { ...data, newUser: false }

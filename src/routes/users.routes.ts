@@ -13,7 +13,8 @@ import {
   followController,
   unfollowController,
   changePasswordController,
-  oauthGoogleController
+  oauthGoogleController,
+  oauthFacebookController
 } from '~/controllers/users.controllers'
 import { filterMiddleware } from '~/middlewares/common.middlewares'
 import {
@@ -164,6 +165,16 @@ usersRouter.patch(
  * Query: { code: string }
  */
 usersRouter.get('/oauth/google', wrapRequestHandlers(oauthGoogleController))
+
+/**
+ * Description: OAuth Facebook
+ * Path: /oauth/facebook
+ * Methods: GET
+ * Header: {}
+ * Body: {}
+ * Query: { code: string }
+ */
+usersRouter.get('/oauth/facebook', wrapRequestHandlers(oauthFacebookController))
 
 usersRouter.get('/me', getMeValidator, wrapRequestHandlers(getMeController))
 usersRouter.post('/login', loginValidator, wrapRequestHandlers(loginController))
