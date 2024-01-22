@@ -7,12 +7,12 @@ import { TokenType, UserVerifyStatus } from '~/constants/enums.constants'
 import RefreshToken from '~/models/schemas/refreshToken.schema'
 import { ObjectId } from 'mongodb'
 import dotenv from 'dotenv'
-import { USERS_MESSAGES } from '~/constants/messages'
+import { USERS_MESSAGES } from '~/constants/messages.constants'
 import Follower from '~/models/schemas/follower.schema'
 import axios from 'axios'
 import crypto from 'crypto'
 import { ErrorWithStatus } from '~/models/Errors'
-import { HTTP_STATUS } from '~/constants/ErrorStatus'
+import { HTTP_STATUS } from '~/constants/ErrorStatus.constants'
 dotenv.config()
 
 // verify: Xác định rằng USER đã được verify hay chưa

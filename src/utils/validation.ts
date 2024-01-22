@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express'
 import { validationResult, ValidationChain } from 'express-validator'
 import { RunnableValidationChains } from 'express-validator/src/middlewares/schema'
 import { isEmpty } from 'lodash'
-import { HTTP_STATUS } from '~/constants/ErrorStatus'
+import { HTTP_STATUS } from '~/constants/ErrorStatus.constants'
 import { EntityError, ErrorWithStatus } from '~/models/Errors'
 
 // Nếu checkSchema có lỗi thì sẽ dừng lại và validate chạy để thông báo lỗi

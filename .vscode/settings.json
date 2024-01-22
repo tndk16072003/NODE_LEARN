@@ -1,3 +1,10 @@
 {
-   "editor.tabSize": 3
+  "workbench.iconTheme": "material-icon-theme",
+  "editor.fontLigatures": "'ss01', 'cv03', 'zero'",
+  "editor.lineHeight": 1.75,
+  "editor.linkedEditing": true,
+  "terminal.integrated.fontWeight": "370",
+  "terminal.integrated.lineHeight": 1.1,
+  "terminal.integrated.letterSpacing": 1,
+  "terminal.integrated.fontWeightBold": "600"
 }

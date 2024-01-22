@@ -15,10 +15,10 @@ import {
   changePasswordReqBody
 } from '~/models/requests/user.requests'
 import { User } from '~/models/schemas/user.schema'
-import { USERS_MESSAGES } from '~/constants/messages'
+import { USERS_MESSAGES } from '~/constants/messages.constants'
 import databaseService from '~/services/database.services'
 import { ObjectId } from 'mongodb'
-import { HTTP_STATUS } from '~/constants/ErrorStatus'
+import { HTTP_STATUS } from '~/constants/ErrorStatus.constants'
 import { UserVerifyStatus } from '~/constants/enums.constants'
 import { hashPassword } from '~/utils/cryptos'
 import { config } from 'dotenv'
@@ -145,7 +145,6 @@ export const oauthFacebookController = async (req: Request, res: Response, next:
 
   const result = await usersService.oauthFacebook(code as string)
   const urlCallBack = `${process.env.CLIENT_URL_CALL_BACK}?accessToken=${result.accessToken}&refreshToken=${result.refreshToken}&newUser=${result.newUser}`
-  console.log(urlCallBack)
   return res.redirect(urlCallBack)
 }
 
@@ -153,8 +152,6 @@ export const oauthGoogleController = async (req: Request, res: Response, next: N
   const { code } = req.query
   const result = await usersService.oauth(code as string)
   const urlCallBack = `${process.env.CLIENT_URL_CALL_BACK}?accessToken=${result.accessToken}&refreshToken=${result.refreshToken}&newUser=${result.newUser}`
-  console.log(urlCallBack)
-
   return res.redirect(urlCallBack)
 }
 
