@@ -6,11 +6,10 @@ import { defaultErrorHandler } from './middlewares/DefaultErrorHandler.middlewar
 import { initFolder } from './utils/files'
 import { UPLOAD_IMAGE_DIR, UPLOAD_VIDEO_DIR } from './constants/_dir.constants'
 import { config } from 'dotenv'
-import path from 'path'
+import staticsRouter from './routes/statics.routes'
 config()
 
 const app = express()
-const port = 4000
 databaseService.connect()
 
 app.use(express.json())
@@ -23,13 +22,14 @@ app.use((req, res, next) => {
 })
 
 initFolder()
-app.use(process.env.UPLOAD_IMAGE_DIR as string, express.static(UPLOAD_IMAGE_DIR))
-app.use(process.env.UPLOAD_VIDEO_DIR as string, express.static(UPLOAD_VIDEO_DIR))
+// app.use(`/${process.env.PREFIX_PATH_STATIC}/${process.env.UPLOAD_IMAGE_DIR}/`, express.static(UPLOAD_IMAGE_DIR))
+// app.use(`/${process.env.PREFIX_PATH_STATIC}/${process.env.UPLOAD_VIDEO_DIR}/`, express.static(UPLOAD_VIDEO_DIR))
 
 app.use('/api/users', usersRouter)
 app.use('/api/medias', mediasRouter)
+app.use(`/${process.env.PREFIX_PATH_STATIC}`, staticsRouter)
 
 app.use(defaultErrorHandler) // Error Handlers
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
+app.listen(process.env.PORT, () => {
+  console.log(`Example app listening on port ${process.env.PORT}`)
 })

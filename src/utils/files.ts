@@ -10,13 +10,14 @@ export const initFolder = () => {
   })
 }
 
-export const handleUploadSingleImage = async (req: Request) => {
+export const handleUploadImage = async (req: Request) => {
   const formidable = (await import('formidable')).default
   const form = formidable({
     uploadDir: UPLOAD_TEMP_DIR, // Thư mục lưu file
-    maxFiles: 1, // Số file tối đa được up cùng lúc
+    maxFiles: 5, // Số file tối đa được up cùng lúc
     keepExtensions: true, // Lấy cả đuôi mở rộng
-    maxFileSize: 2000 * 1024, // Dung lượng tối đa cả 1 file
+    maxFileSize: 1000 * 1024, // Dung lượng tối đa cả 1 file
+    maxTotalFileSize: 1000 * 1024 * 5,
     filter: function ({ name, originalFilename, mimetype }) {
       const valid = Boolean(name === 'image' && mimetype && mimetype.includes('image/'))
       if (!valid) form.emit('error' as any, new Error('Type file is not valid') as any)
@@ -25,11 +26,11 @@ export const handleUploadSingleImage = async (req: Request) => {
   })
 
   // Để có thể đưa lỗi từ callback trong sang errorhandler nên dùng promise
-  return new Promise<File>((resolve, reject) => {
+  return new Promise<File[]>((resolve, reject) => {
     form.parse(req, (err, fields, files) => {
       if (err) return reject(err)
       if (files.image === undefined) return reject(new Error('File is empty'))
-      resolve((files.image as File[])[0])
+      resolve(files.image as File[])
     })
   })
 }
