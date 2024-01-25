@@ -3,6 +3,9 @@ import dotenv from 'dotenv'
 import { User } from '~/models/schemas/user.schema'
 import RefreshToken from '~/models/schemas/refreshToken.schema'
 import Follower from '~/models/schemas/follower.schema'
+import Tweet from '~/models/schemas/tweets.schema'
+import Hashtag from '~/models/schemas/hashtags.schema'
+import { BookMark } from '~/models/schemas/bookMark.schema'
 dotenv.config()
 
 const DB_USERNAME = process.env.DB_USERNAME
@@ -41,6 +44,18 @@ class DatabaseService {
 
   get followers(): Collection<Follower> {
     return this.db.collection(process.env.DB_FOLLOWERS_COLLECTION as string)
+  }
+
+  get tweets(): Collection<Tweet> {
+    return this.db.collection(process.env.DB_TWEETS_COLLECTION as string)
+  }
+
+  get hashtags(): Collection<Hashtag> {
+    return this.db.collection(process.env.DB_HASHTAGS_COLLECTION as string)
+  }
+
+  get bookmarks(): Collection<BookMark> {
+    return this.db.collection(process.env.DB_BOOKMARKS_COLLECTION as string)
   }
 }
 

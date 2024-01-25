@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response, request } from 'express'
+import { NextFunction, Request, Response } from 'express'
 import usersService from '~/services/users.services'
 import { ParamsDictionary } from 'express-serve-static-core'
 import {
@@ -13,14 +13,14 @@ import {
   verifyEmailTokenReqBody,
   verifyForgotPasswordTokenReqBody,
   changePasswordReqBody
-} from '~/models/requests/user.requests'
+} from '~/models/requests/user.request'
 import { User } from '~/models/schemas/user.schema'
 import { USERS_MESSAGES } from '~/constants/messages.constants'
 import databaseService from '~/services/database.services'
 import { ObjectId } from 'mongodb'
 import { HTTP_STATUS } from '~/constants/ErrorStatus.constants'
 import { UserVerifyStatus } from '~/constants/enums.constants'
-import { hashPassword } from '~/utils/cryptos'
+import { hashPassword } from '~/utils/cryptos.utils'
 import { config } from 'dotenv'
 config()
 

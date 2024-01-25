@@ -33,8 +33,8 @@ import {
   verifiedUserValidator,
   verifyForgotPasswordTokenValidator
 } from '~/middlewares/users.middlewares'
-import { updateReqBody } from '~/models/requests/user.requests'
-import { wrapRequestHandlers } from '~/utils/handlers'
+import { updateReqBody } from '~/models/requests/user.request'
+import { wrapRequestHandlers } from '~/utils/handlers.utils'
 
 const usersRouter = Router()
 

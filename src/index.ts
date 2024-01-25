@@ -1,12 +1,13 @@
 import express from 'express'
-import usersRouter from './routes/users.routes'
-import mediasRouter from './routes/medias.routes'
+import usersRouter from './routes/users.route'
+import mediasRouter from './routes/medias.route'
 import databaseService from './services/database.services'
 import { defaultErrorHandler } from './middlewares/DefaultErrorHandler.middlewares'
-import { initFolder } from './utils/files'
+import { initFolder } from './utils/files.utils'
 import { UPLOAD_IMAGE_DIR, UPLOAD_VIDEO_DIR } from './constants/_dir.constants'
 import { config } from 'dotenv'
-import staticsRouter from './routes/statics.routes'
+import staticsRouter from './routes/statics.route'
+import tweetsRouter from './routes/tweets.route'
 config()
 
 const app = express()
@@ -27,6 +28,7 @@ initFolder()
 
 app.use('/api/users', usersRouter)
 app.use('/api/medias', mediasRouter)
+app.use('/api/tweets', tweetsRouter)
 app.use(`/${process.env.PREFIX_PATH_STATIC}`, staticsRouter)
 
 app.use(defaultErrorHandler) // Error Handlers
