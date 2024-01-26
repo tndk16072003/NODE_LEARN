@@ -72,5 +72,7 @@ export const TWEETS_MESSAGES = {
   CREATE_TWEET_SUCCESSFULLY: 'Create tweet successfully',
   TWEET_ID_IS_VALID: 'Tweet id is valid',
   BOOKMARK_SUCCESSFULLY: 'Bookmark successfully',
-  UNBOOKMARK_SUCCESSFULLY: 'Unbookmark successfully'
+  UNBOOKMARK_SUCCESSFULLY: 'Unbookmark successfully',
+  LIKE_SUCCESSFULLY: 'Like successfully',
+  UNLIKE_SUCCESSFULLY: 'Unlike successfully'
 } as const

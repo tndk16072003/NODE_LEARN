@@ -6,6 +6,7 @@ import Follower from '~/models/schemas/follower.schema'
 import Tweet from '~/models/schemas/tweets.schema'
 import Hashtag from '~/models/schemas/hashtags.schema'
 import { BookMark } from '~/models/schemas/bookMark.schema'
+import { Like } from '~/models/schemas/likes.schema'
 dotenv.config()
 
 const DB_USERNAME = process.env.DB_USERNAME
@@ -55,7 +56,11 @@ class DatabaseService {
   }
 
   get bookmarks(): Collection<BookMark> {
-    return this.db.collection(process.env.DB_BOOKMARKS_COLLECTION as string)
+    return this.db.collection(process.env.DB_BOOKMARQKS_COLLECTION as string)
+  }
+
+  get likes(): Collection<Like> {
+    return this.db.collection(process.env.DB_LIKES_COLLECTION as string)
   }
 }
 

@@ -16,13 +16,24 @@ export const CreateTweetController = async (
   res.json({ message: TWEETS_MESSAGES.CREATE_TWEET_SUCCESSFULLY, result })
 }
 
-export const CreateBookmarkController = async (
+export const bookmarkController = async (
   req: Request<ParamsDictionary, any, BookmarkReqBody>,
   res: Response,
   next: NextFunction
 ) => {
   const { userId } = req.decoded_authorization as TokenPayload
   const { tweet_id } = req.body
-  const result = await tweetsServices.CreateBookmark(userId, tweet_id)
+  const result = await tweetsServices.bookmark(userId, tweet_id)
+  res.json(result)
+}
+
+export const likeController = async (
+  req: Request<ParamsDictionary, any, BookmarkReqBody>,
+  res: Response,
+  next: NextFunction
+) => {
+  const { userId } = req.decoded_authorization as TokenPayload
+  const { tweet_id } = req.body
+  const result = await tweetsServices.like(userId, tweet_id)
   res.json(result)
 }

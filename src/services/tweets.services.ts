@@ -46,7 +46,7 @@ class TweetsServices {
     return tweet
   }
 
-  async CreateBookmark(user_id: string, tweet_id: string) {
+  async bookmark(user_id: string, tweet_id: string) {
     const objectIdTweetId = new ObjectId(tweet_id)
     const objectIdUserId = new ObjectId(user_id)
     // Nếu chưa có thì tạo. Có rồi thì xóa
@@ -66,6 +66,28 @@ class TweetsServices {
       )
       const bookmark = await databaseService.bookmarks.findOne({ _id: data.insertedId })
       return { message: TWEETS_MESSAGES.BOOKMARK_SUCCESSFULLY, bookmark }
+    }
+  }
+  async like(user_id: string, tweet_id: string) {
+    const objectIdTweetId = new ObjectId(tweet_id)
+    const objectIdUserId = new ObjectId(user_id)
+    // Nếu chưa có thì tạo. Có rồi thì xóa
+    const checkLikeExist = await databaseService.likes.findOne({
+      tweet_id: objectIdTweetId,
+      user_id: objectIdUserId
+    })
+    if (checkLikeExist) {
+      await databaseService.likes.deleteOne({
+        tweet_id: objectIdTweetId,
+        user_id: objectIdUserId
+      })
+      return { message: TWEETS_MESSAGES.UNLIKE_SUCCESSFULLY }
+    } else {
+      const data = await databaseService.likes.insertOne(
+        new BookMark({ tweet_id: objectIdTweetId, user_id: objectIdUserId })
+      )
+      const like = await databaseService.likes.findOne({ _id: data.insertedId })
+      return { message: TWEETS_MESSAGES.LIKE_SUCCESSFULLY, like }
     }
   }
 }

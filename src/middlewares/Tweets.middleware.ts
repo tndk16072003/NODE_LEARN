@@ -12,7 +12,7 @@ const tweetTypes: number[] = getArrayNumberEnum(TweetType)
 const tweetAudiences: number[] = getArrayNumberEnum(TweetAudience)
 const tweetMedias: number[] = getArrayNumberEnum(MediaType)
 
-export const createBookmarkValidator = validate(
+export const CheckTweetIdValidator = validate(
   checkSchema({
     tweet_id: {
       isString: true,
