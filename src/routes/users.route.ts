@@ -33,7 +33,7 @@ import {
   verifiedUserValidator,
   verifyForgotPasswordTokenValidator
 } from '~/middlewares/users.middlewares'
-import { updateReqBody } from '~/models/requests/user.request'
+import { registerReqBody, updateReqBody } from '~/models/requests/user.request'
 import { wrapRequestHandlers } from '~/utils/handlers.utils'
 
 const usersRouter = Router()
@@ -179,7 +179,12 @@ usersRouter.get('/oauth/facebook', wrapRequestHandlers(oauthFacebookController))
 usersRouter.get('/me', getMeValidator, wrapRequestHandlers(getMeController))
 usersRouter.post('/login', loginValidator, wrapRequestHandlers(loginController))
 
-usersRouter.post('/register', registerValidator, wrapRequestHandlers(registerController))
+usersRouter.post(
+  '/register',
+  registerValidator,
+  filterMiddleware<registerReqBody>(['name', 'email', 'password', 'date_of_birth']),
+  wrapRequestHandlers(registerController)
+)
 usersRouter.post('/logout', accessTokenValidator, refreshTokenValidator, wrapRequestHandlers(logoutController))
 
 export default usersRouter

@@ -1,6 +1,16 @@
 import { Router } from 'express'
-import { CreateTweetController, bookmarkController, likeController } from '~/controllers/tweets.controllers'
-import { CheckTweetIdValidator, createTweetValidator } from '~/middlewares/Tweets.middleware'
+import {
+  CreateTweetController,
+  bookmarkController,
+  getTweetController,
+  likeController
+} from '~/controllers/tweets.controllers'
+import {
+  checkAudienceValidator,
+  checkTweetIdValidator,
+  createTweetValidator,
+  isUserLoggedInValidator
+} from '~/middlewares/Tweets.middleware'
 import { accessTokenValidator, verifiedUserValidator } from '~/middlewares/users.middlewares'
 import { wrapRequestHandlers } from '~/utils/handlers.utils'
 
@@ -31,7 +41,7 @@ tweetsRouter.post(
   '/bookmark',
   accessTokenValidator,
   verifiedUserValidator,
-  CheckTweetIdValidator,
+  checkTweetIdValidator,
   wrapRequestHandlers(bookmarkController)
 )
 
@@ -46,8 +56,25 @@ tweetsRouter.post(
   '/like',
   accessTokenValidator,
   verifiedUserValidator,
-  CheckTweetIdValidator,
+  checkTweetIdValidator,
   wrapRequestHandlers(likeController)
+)
+
+/**
+ * Description: Get tweet infomation
+ * Path: /
+ * Methods: POST
+ * HeaderL { Authentication: { access_token: string } }
+ * param: { tweet_id: string }
+ */
+tweetsRouter.get(
+  '/:tweet_id',
+  isUserLoggedInValidator(accessTokenValidator),
+  isUserLoggedInValidator(verifiedUserValidator),
+  checkTweetIdValidator,
+  // checkAudienceValidator là một middleware function nên cần sử dụng wrapRequestHandlers để thông báo lỗi
+  wrapRequestHandlers(checkAudienceValidator),
+  wrapRequestHandlers(getTweetController)
 )
 
 export default tweetsRouter

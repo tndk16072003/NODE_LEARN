@@ -5,6 +5,7 @@ import Tweet from '~/models/schemas/tweets.schema'
 import Hashtag from '~/models/schemas/hashtags.schema'
 import { BookMark } from '~/models/schemas/bookMark.schema'
 import { TWEETS_MESSAGES } from '~/constants/messages.constants'
+import { Like } from '~/models/schemas/likes.schema'
 
 class TweetsServices {
   async CheckToGetOrCreatHashTag(hashtags: string[]) {
@@ -54,7 +55,8 @@ class TweetsServices {
       tweet_id: objectIdTweetId,
       user_id: objectIdUserId
     })
-    if (checkBookmarkExist) {
+    console.log(checkBookmarkExist)
+    if (checkBookmarkExist !== null) {
       await databaseService.bookmarks.deleteOne({
         tweet_id: objectIdTweetId,
         user_id: objectIdUserId
@@ -68,6 +70,7 @@ class TweetsServices {
       return { message: TWEETS_MESSAGES.BOOKMARK_SUCCESSFULLY, bookmark }
     }
   }
+
   async like(user_id: string, tweet_id: string) {
     const objectIdTweetId = new ObjectId(tweet_id)
     const objectIdUserId = new ObjectId(user_id)
@@ -76,7 +79,7 @@ class TweetsServices {
       tweet_id: objectIdTweetId,
       user_id: objectIdUserId
     })
-    if (checkLikeExist) {
+    if (checkLikeExist !== null) {
       await databaseService.likes.deleteOne({
         tweet_id: objectIdTweetId,
         user_id: objectIdUserId
@@ -84,7 +87,7 @@ class TweetsServices {
       return { message: TWEETS_MESSAGES.UNLIKE_SUCCESSFULLY }
     } else {
       const data = await databaseService.likes.insertOne(
-        new BookMark({ tweet_id: objectIdTweetId, user_id: objectIdUserId })
+        new Like({ tweet_id: objectIdTweetId, user_id: objectIdUserId })
       )
       const like = await databaseService.likes.findOne({ _id: data.insertedId })
       return { message: TWEETS_MESSAGES.LIKE_SUCCESSFULLY, like }

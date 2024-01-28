@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
 import { TWEETS_MESSAGES } from '~/constants/messages.constants'
-import { BookmarkReqBody, TweetReqBody } from '~/models/requests/tweet.request'
+import { BookmarkReqBody, LikeReqBody, TweetReqBody } from '~/models/requests/tweet.request'
 import { TokenPayload } from '~/models/requests/user.request'
 import tweetsServices from '~/services/tweets.services'
 
@@ -28,7 +28,7 @@ export const bookmarkController = async (
 }
 
 export const likeController = async (
-  req: Request<ParamsDictionary, any, BookmarkReqBody>,
+  req: Request<ParamsDictionary, any, LikeReqBody>,
   res: Response,
   next: NextFunction
 ) => {
@@ -36,4 +36,8 @@ export const likeController = async (
   const { tweet_id } = req.body
   const result = await tweetsServices.like(userId, tweet_id)
   res.json(result)
+}
+
+export const getTweetController = async (req: Request, res: Response, next: NextFunction) => {
+  res.json({ result: req.tweet })
 }
