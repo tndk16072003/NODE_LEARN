@@ -18,3 +18,13 @@ export interface BookmarkReqBody {
 export interface LikeReqBody {
   tweet_id: string
 }
+
+export interface getTweetChildrenReqParams {
+  tweet_id: string
+}
+
+export interface getTweetChildrenReqQuerys {
+  limit: number
+  page: number
+  tweet_type: TweetType
+}

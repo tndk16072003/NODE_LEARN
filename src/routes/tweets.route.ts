@@ -2,6 +2,7 @@ import { Router } from 'express'
 import {
   CreateTweetController,
   bookmarkController,
+  getTweetChildrenController,
   getTweetController,
   likeController
 } from '~/controllers/tweets.controllers'
@@ -9,6 +10,7 @@ import {
   checkAudienceValidator,
   checkTweetIdValidator,
   createTweetValidator,
+  getTweetChildrenValidator,
   isUserLoggedInValidator
 } from '~/middlewares/Tweets.middleware'
 import { accessTokenValidator, verifiedUserValidator } from '~/middlewares/users.middlewares'
@@ -75,6 +77,23 @@ tweetsRouter.get(
   // checkAudienceValidator là một middleware function nên cần sử dụng wrapRequestHandlers để thông báo lỗi
   wrapRequestHandlers(checkAudienceValidator),
   wrapRequestHandlers(getTweetController)
+)
+
+/**
+ * Description: Get tweet children
+ * Path: /
+ * Methods: POST
+ * Header: { Authentication: { access_token: string } }
+ * param: { tweet_id: string }
+ * Query: { limit: number, page: number, tweet_type: TweetType }
+ */
+tweetsRouter.get(
+  '/:tweet_id/children',
+  getTweetChildrenValidator,
+  isUserLoggedInValidator(accessTokenValidator),
+  isUserLoggedInValidator(verifiedUserValidator),
+  // checkAudienceValidator là một middleware function nên cần sử dụng wrapRequestHandlers để thông báo lỗi
+  wrapRequestHandlers(getTweetChildrenController)
 )
 
 export default tweetsRouter

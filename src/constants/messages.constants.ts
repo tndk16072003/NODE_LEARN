@@ -76,5 +76,8 @@ export const TWEETS_MESSAGES = {
   LIKE_SUCCESSFULLY: 'Like successfully',
   UNLIKE_SUCCESSFULLY: 'Unlike successfully',
   TWEET_NOT_FOUND: 'Tweet not found',
-  TWEET_IS_NOT_PUBLIC: 'Tweet is not public'
+  TWEET_IS_NOT_PUBLIC: 'Tweet is not public',
+  TWEET_TYPE_IS_VALID: 'Tweet type is valid',
+  LIMIT_MUST_BE_NUMBER: 'Limit must be number',
+  LIMIT_MUST_BE_FROM_1_TO_100: 'Limit must be from 1 to 100'
 } as const

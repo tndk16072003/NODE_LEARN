@@ -17,6 +17,38 @@ const tweetTypes: number[] = getArrayNumberEnum(TweetType)
 const tweetAudiences: number[] = getArrayNumberEnum(TweetAudience)
 const tweetMedias: number[] = getArrayNumberEnum(MediaType)
 
+export const getTweetChildrenValidator = validate(
+  checkSchema(
+    {
+      tweet_type: {
+        isIn: {
+          options: [tweetTypes],
+          errorMessage: TWEETS_MESSAGES.TWEET_TYPE_IS_VALID
+        }
+      },
+      limit: {
+        isNumeric: {
+          errorMessage: TWEETS_MESSAGES.LIMIT_MUST_BE_NUMBER
+        },
+        custom: {
+          options: (value) => {
+            if (value < 1 || value > 100)
+              throw new ErrorWithStatus({
+                message: TWEETS_MESSAGES.LIMIT_MUST_BE_FROM_1_TO_100,
+                status: HTTP_STATUS.UNAUTHORIZED
+              })
+            return true
+          }
+        }
+      },
+      page: {
+        isNumeric: true
+      }
+    },
+    ['query']
+  )
+)
+
 export const isUserLoggedInValidator = (nextMiddleware: (req: Request, res: Response, next: NextFunction) => void) => {
   return (req: Request, res: Response, next: NextFunction) => {
     if (req.headers.authorization) return nextMiddleware(req, res, next)
@@ -85,7 +117,7 @@ export const checkTweetIdValidator = validate(
                           input: '$tweet_children',
                           as: 'children',
                           cond: {
-                            $eq: ['$$children.type', 1]
+                            $eq: ['$$children.type', TweetType.Retweet]
                           }
                         }
                       }
@@ -96,7 +128,7 @@ export const checkTweetIdValidator = validate(
                           input: '$tweet_children',
                           as: 'children',
                           cond: {
-                            $eq: ['$$children.type', 2]
+                            $eq: ['$$children.type', TweetType.Comment]
                           }
                         }
                       }
@@ -107,7 +139,7 @@ export const checkTweetIdValidator = validate(
                           input: '$tweet_children',
                           as: 'children',
                           cond: {
-                            $eq: ['$$children.type', 3]
+                            $eq: ['$$children.type', TweetType.QuoteTweet]
                           }
                         }
                       }
@@ -207,7 +239,7 @@ export const createTweetValidator = validate(
       mentions: {
         isArray: true,
         custom: {
-          options: (value, { req }) => {
+          options: (value) => {
             if (!value.some((item: any) => ObjectId.isValid(item))) {
               throw new Error(TWEETS_MESSAGES.MENTIONS_MUST_BE_AN_ARRAY_OF_USER_ID)
             }
